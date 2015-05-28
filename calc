@@ -1,0 +1,195 @@
+/*  This is the last version of the calculator example as worked out in class **/
+
+/**  To compile this code, use                         **
+ *  gcc -o calc calc.c -std=c99 -lm                    **/
+
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#define KEY "Enter the calculator operation you want to do: "
+#define enter_option() printf("%s", KEY)
+
+#define SCREEN_HEIGHT 15
+#define clear_screen() \
+for ( int i = 0; i < SCREEN_HEIGHT; i++ ) printf("\n");
+
+#define clean_input() while ((getchar())!='\n') continue
+
+#define calculator_operations() printf("\n"); \
+printf("********    Welcome to C calculator     ***********\n"); \
+printf("**-----------------------------------------------**\n"); \
+printf("**   Press 'Q' or 'q' to quit the program        **\n"); \
+printf("**   Press 'H' or 'h' to display below options   **\n"); \
+printf("**   Press 'C' or 'c' to clear the screen        **\n"); \
+printf("**-----------------------------------------------**\n"); \
+printf("**   Enter 'A' or 'a' for arithmetic mode        **\n"); \
+printf("**   Enter 'F' or 'f' for function mode          **\n"); \
+printf("**   Enter 'S' or 's' for sorting mode           **\n"); \
+printf("***************************************************\n"); \
+printf("\n");
+
+#define DISP(f,x) printf(#f"(%g) = %g\n",x,f(x));
+#define DISP_I(f,x) printf(#f"(%d) = %d\n",(int) x,(int) f((int) x));
+
+// Function prototype declaration
+void arith_mode();
+void func_mode();
+void sort_mode();
+void read_line(char *);
+int factorial(int );
+
+void bubble(int *ptr,int s)
+{
+    int i,j;
+    int temp;
+    for(i=1;i<s;i++)
+    {
+        for(j=0;j<s-i;j++)
+        {
+            if(*(ptr+j)>*(ptr+j+1))
+            {
+                temp=*(ptr+j);
+                *(ptr+j)=*(ptr+j+1);
+                *(ptr+j+1)=temp;
+            }
+        }
+    }
+}
+    int arr[10];
+    int i;
+    int size;
+    printf("\nEnter the size of array :");
+    scanf("%d",&size);
+    printf("\nEnter the numbers of the array\n");
+    for(i=0;i<size;i++)
+        scanf("%d",&arr[i]);
+    printf("\nBefore sorting\n");
+    for(i=0;i<size;i++)
+        printf("%d   ",arr[i]);
+    bubble(arr,size);
+    printf("\nAfter sorting\n");
+    for(i=0;i<size;i++)
+        printf("%d   ",arr[i]);
+
+
+// Start of Main Program
+int main()
+{
+    int X=1;
+    char Calc_Mode;
+    
+    do
+    {
+        calculator_operations();
+        enter_option();
+        Calc_Mode=getchar();
+        
+        switch(Calc_Mode)
+        {
+            case 'A': case 'a': arith_mode(); break;
+            case 'F': case 'f': func_mode(); break;
+            case 'S': case 's': sort_mode(); break;
+                // Can you integrate the quick sort program into our calculator?
+                
+            case 'H': case 'h': case '\n': break;
+                
+            case 'Q': case 'q': printf("Leaving Calculator!\n");
+                exit(0);
+                
+            case 'C': case 'c': clear_screen();
+                clean_input(); break;
+        }
+        
+    } while (X);
+}
+
+//Function Definitions
+
+void arith_mode()
+{
+    double value, operand;
+    char operator;
+    
+    printf("\nPlease enter arithmetic expression "
+           "as in \"x +-*/%%^ y +-*/%%^ z ...\" \n");
+    printf("Your expression is: ");
+    
+    /* Read first operand */
+    scanf("%lf", &value);
+    
+    /* Read successive operators and operands */
+    while ((operator = getchar()) != '\n') {
+        if (operator == ' ') continue;
+        
+        scanf("%lf", &operand);
+        switch (operator) {
+            case '+': value += operand; break;
+            case '-': value -= operand; break;
+            case '*': value *= operand; break;
+            case '/': value /= operand; break;
+            case '%': value = ((int) value)%((int) operand); break;
+            case '^': value = pow(value,operand); break;
+            default:  printf("\n Invalid Operator! \n"); exit(0);
+        }
+    }
+    
+    /* Print result */
+    printf("Value of expression: %g\n\n", value);
+}
+
+void func_mode()
+{
+    char *cp, func_initial, line[40];
+    double variable;
+    
+    printf("\nPlease enter functions as in "
+           "\"name(x)\". \n");
+    printf("Your function is: ");
+    
+    clean_input();
+    
+    read_line(line);
+    func_initial = line[0];
+    
+    for (cp = line; *cp; cp++) {
+        if (*cp == '(') {
+            sscanf(++cp,"%lf", &variable);
+            switch (func_initial) {
+                case 'F': case 'f': DISP_I(factorial,variable); break;
+                case 'E': case 'e': DISP(exp,variable); break;
+                case 'S': case 's': DISP(sqrt,variable); break;
+                default: printf("\n Invalid Function! \n"); exit(0);
+            }
+            break;
+        }
+    }
+}
+
+void sort_mode()
+{
+    clean_input();
+    printf("You may select either of two sorting modes.");
+    printf("Bubble sort or Quick sort");
+    
+    
+}
+
+void read_line(char *line)
+{
+    int index; char ch;
+    
+    index = 0;
+    while ((ch= getchar()) !='\n') {
+        if (ch == ' ') continue;
+        line[index++] = ch;
+    }
+    
+    line[index] = '\0';
+}
+
+int factorial(int n)
+{
+    if(n<=1) return 1;
+    else return n*factorial(n-1);
+}
